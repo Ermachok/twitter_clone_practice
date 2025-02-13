@@ -14,5 +14,9 @@ class TweetResponse(BaseModel):
 class TweetDetail(BaseModel):
     id: int
     content: str
-    author: "UserBase"
-    likes: List["UserBase"] = []
+    author_id: int
+
+
+class TweetListResponse(BaseModel):
+    result: bool
+    tweets: List[TweetDetail]

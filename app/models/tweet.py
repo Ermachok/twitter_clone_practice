@@ -11,3 +11,4 @@ class Tweet(Base):
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     author = relationship("User")
+    likes = relationship("Like", back_populates="tweet", cascade="all, delete-orphan")

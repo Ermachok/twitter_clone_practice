@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.database import get_db
 from app.models.user import User
-from sqlalchemy.future import select
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
 
 @router.get("/me")
-async def get_current_user(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
+async def get_current_user(
+        api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.name == api_key))
     user = result.scalars().first()
     if not user:

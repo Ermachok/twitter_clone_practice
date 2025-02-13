@@ -8,8 +8,8 @@ class UserBase(BaseModel):
 
 
 class UserProfile(UserBase):
-    followers: List[UserBase] = Field(default_factory=lambda: [])
-    following: List[UserBase] = Field(default_factory=lambda: [])
+    followers: List[UserBase] = Field(default_factory=list)
+    following: List[UserBase] = Field(default_factory=list)
 
 
 class UserResponse(BaseModel):

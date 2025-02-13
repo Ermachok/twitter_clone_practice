@@ -4,7 +4,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncConnection
 from alembic import context
 from app.database import DATABASE_URL
+
 from app.models.base import Base
+from app.models.user import User
+from app.models.tweet import Tweet
+from app.models.like import Like
+from app.models.follow import Follow
+
 
 config = context.config
 if config.config_file_name:

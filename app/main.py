@@ -1,14 +1,12 @@
 from fastapi import FastAPI
-from app.api.endpoints import users, tweets
+from app.api.endpoints import users, tweets, follows
 
 app = FastAPI(title="Microblog API")
 
 @app.get("/")
-def root():
+async def root():
     return {"message": "Microblog API is running!"}
-
-
-app = FastAPI(title="Microblog API")
 
 app.include_router(users.router)
 app.include_router(tweets.router)
+app.include_router(follows.router)
