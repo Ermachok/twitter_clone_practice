@@ -61,3 +61,41 @@ async def unfollow_user(
     await db.commit()
 
     return {"result": True, "message": "Unfollowed successfully"}
+
+
+@router.get("/following")
+async def get_following(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
+    user_result = await db.execute(select(User).where(User.name == api_key))
+    user = user_result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    following_result = await db.execute(select(Follow).where(Follow.follower_id == user.id))
+    following = following_result.scalars().unique().all()
+
+    following_users = [
+        {"id": f.following_id,
+         "name": (await db.execute(select(User.name).where(User.id == f.following_id))).scalar_one()}
+        for f in following
+    ]
+
+    return {"result": True, "following": following_users}
+
+
+@router.get("/followers")
+async def get_followers(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
+    user_result = await db.execute(select(User).where(User.name == api_key))
+    user = user_result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    followers_result = await db.execute(select(Follow).where(Follow.following_id == user.id))
+    followers = followers_result.scalars().unique().all()
+
+    followers_users = [
+        {"id": f.follower_id,
+         "name": (await db.execute(select(User.name).where(User.id == f.follower_id))).scalar_one()}
+        for f in followers
+    ]
+
+    return {"result": True, "followers": followers_users}
