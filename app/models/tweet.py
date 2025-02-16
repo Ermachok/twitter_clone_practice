@@ -12,3 +12,4 @@ class Tweet(Base):
 
     author = relationship("User")
     likes = relationship("Like", back_populates="tweet", cascade="all, delete-orphan")
+    medias = relationship("Media", back_populates="tweet")

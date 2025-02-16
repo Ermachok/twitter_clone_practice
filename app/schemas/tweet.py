@@ -1,9 +1,10 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class TweetCreate(BaseModel):
-    content: str
+    tweet_data: str
+    tweet_media_ids: Optional[List[int]]
 
 
 class TweetResponse(BaseModel):
