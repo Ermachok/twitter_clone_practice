@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 
-import os
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -13,7 +11,7 @@ from app.models.like import Like
 from app.models.follow import Follow
 from app.models.media import Media
 
-from app.schemas.tweet import TweetCreate, TweetResponse, TweetListResponse
+from app.schemas.tweet import TweetCreate, TweetResponse
 
 router = APIRouter(prefix="/api/tweets", tags=["Tweets"])
 
