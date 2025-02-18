@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database import get_db
-from app.models.user import User
 from app.models.follow import Follow
+from app.models.user import User
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -17,12 +17,16 @@ async def get_user_with_follow_data(user_id: int, db: AsyncSession):
         raise HTTPException(status_code=404, detail="User not found")
 
     followers_result = await db.execute(
-        select(User.id, User.name).join(Follow, Follow.follower_id == User.id).where(Follow.following_id == user_id)
+        select(User.id, User.name)
+        .join(Follow, Follow.follower_id == User.id)
+        .where(Follow.following_id == user_id)
     )
     followers = [{"id": f.id, "name": f.name} for f in followers_result.all()]
 
     following_result = await db.execute(
-        select(User.id, User.name).join(Follow, Follow.following_id == User.id).where(Follow.follower_id == user_id)
+        select(User.id, User.name)
+        .join(Follow, Follow.following_id == User.id)
+        .where(Follow.follower_id == user_id)
     )
     following = [{"id": f.id, "name": f.name} for f in following_result.all()]
 
@@ -35,7 +39,9 @@ async def get_user_with_follow_data(user_id: int, db: AsyncSession):
 
 
 @router.get("/me")
-async def get_current_user(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
+async def get_current_user(
+    api_key: str = Header(...), db: AsyncSession = Depends(get_db)
+):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()
 

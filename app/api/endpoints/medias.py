@@ -1,8 +1,7 @@
 import os
 import shutil
 
-from fastapi import APIRouter, File, UploadFile, Depends, Header, HTTPException
-
+from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -17,9 +16,9 @@ UPLOAD_DIR = "uploads"
 
 @router.post("")
 async def upload_media(
-        api_key: str = Header(...),
-        file: UploadFile = File(...),
-        db: AsyncSession = Depends(get_db),
+    api_key: str = Header(...),
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
 ):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()

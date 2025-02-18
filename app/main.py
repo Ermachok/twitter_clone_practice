@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.api.endpoints import users, tweets, follows, media
+from app.api.endpoints import follows, medias, tweets, users
 
 app = FastAPI(title="Microblog API", redirect_slashes=True)
 
 app.include_router(users.router)
 app.include_router(tweets.router)
 app.include_router(follows.router)
-app.include_router(media.router)
+app.include_router(medias.router)
 
 UPLOAD_DIR = "uploads"
 
