@@ -14,9 +14,7 @@ class Like(Base):
         Integer, ForeignKey("tweets.id", ondelete="CASCADE"), nullable=False
     )
 
-    __table_args__ = (
-        UniqueConstraint("user_id", "tweet_id", name="unique_like"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "tweet_id", name="unique_like"),)
 
     user = relationship("User", back_populates="likes")
     tweet = relationship("Tweet", back_populates="likes")

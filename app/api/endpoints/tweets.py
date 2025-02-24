@@ -71,14 +71,10 @@ async def get_user_feed(
     response = []
     for tweet in tweets:
 
-        author_result = await db.execute(
-            select(User).where(User.id == tweet.author_id)
-        )
+        author_result = await db.execute(select(User).where(User.id == tweet.author_id))
         author = author_result.scalars().first()
 
-        likes_result = await db.execute(
-            select(Like).where(Like.tweet_id == tweet.id)
-        )
+        likes_result = await db.execute(select(Like).where(Like.tweet_id == tweet.id))
         likes = likes_result.scalars().all()
         likes_data = []
         for like in likes:
@@ -174,9 +170,7 @@ async def get_tweet_likes(tweet_id: int, db: AsyncSession = Depends(get_db)):
     if not tweet:
         raise HTTPException(status_code=404, detail="Tweet not found")
 
-    likes_result = await db.execute(
-        select(Like).where(Like.tweet_id == tweet_id)
-    )
+    likes_result = await db.execute(select(Like).where(Like.tweet_id == tweet_id))
     likes = likes_result.scalars().unique().all()
     return {"result": True, "likes_count": len(likes)}
 

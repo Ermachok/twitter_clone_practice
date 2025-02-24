@@ -1,6 +1,8 @@
 import pytest
-from app.models.user import User
+
 from app.models.follow import Follow
+from app.models.user import User
+
 
 @pytest.mark.anyio
 async def test_get_current_user(test_session, client):
@@ -27,7 +29,9 @@ async def test_get_current_user(test_session, client):
 @pytest.mark.anyio
 async def test_get_current_user_not_found(test_session, client):
     """Test retrieving current user when user does not exist (should return 404)"""
-    response = await client.get("/api/users/me", headers={"api-key": "nonexistent_user"})
+    response = await client.get(
+        "/api/users/me", headers={"api-key": "nonexistent_user"}
+    )
 
     assert response.status_code == 404
     assert response.json()["detail"] == "User not found"

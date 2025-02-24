@@ -25,16 +25,10 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("follower_id", sa.Integer(), nullable=False),
         sa.Column("following_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["follower_id"], ["users.id"], ondelete="CASCADE"
-        ),
-        sa.ForeignKeyConstraint(
-            ["following_id"], ["users.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["follower_id"], ["users.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(["following_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint(
-            "follower_id", "following_id", name="unique_follow"
-        ),
+        sa.UniqueConstraint("follower_id", "following_id", name="unique_follow"),
     )
     op.create_index(op.f("ix_follows_id"), "follows", ["id"], unique=False)
     # ### end Alembic commands ###

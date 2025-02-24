@@ -25,9 +25,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("file_path", sa.String(), nullable=False),
         sa.Column("tweet_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["tweet_id"], ["tweets.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["tweet_id"], ["tweets.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_medias_id"), "medias", ["id"], unique=False)

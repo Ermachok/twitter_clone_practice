@@ -1,10 +1,10 @@
 import pytest
 from sqlalchemy import select
-from app.models.user import User
-from app.models.tweet import Tweet
+
 from app.models.follow import Follow
 from app.models.like import Like
-from app.schemas.tweet import TweetCreate
+from app.models.tweet import Tweet
+from app.models.user import User
 
 
 @pytest.mark.anyio
@@ -26,7 +26,9 @@ async def test_create_tweet(test_session, client):
     assert "tweet_id" in data
 
     # Check if tweet exists in DB
-    tweet = await test_session.execute(select(Tweet).where(Tweet.id == data["tweet_id"]))
+    tweet = await test_session.execute(
+        select(Tweet).where(Tweet.id == data["tweet_id"])
+    )
     assert tweet.scalar() is not None
 
 
@@ -102,7 +104,9 @@ async def test_like_tweet(test_session, client):
     assert response.json()["message"] == "Tweet liked"
 
     # Check if like exists in DB
-    like = await test_session.execute(select(Like).where(Like.user_id == 1, Like.tweet_id == 1))
+    like = await test_session.execute(
+        select(Like).where(Like.user_id == 1, Like.tweet_id == 1)
+    )
     assert like.scalar() is not None
 
 
@@ -155,7 +159,9 @@ async def test_unlike_tweet(test_session, client):
     assert response.status_code == 200
     assert response.json()["message"] == "Like removed"
 
-    like = await test_session.execute(select(Like).where(Like.user_id == 1, Like.tweet_id == 1))
+    like = await test_session.execute(
+        select(Like).where(Like.user_id == 1, Like.tweet_id == 1)
+    )
     assert like.scalar() is None
 
 
@@ -172,4 +178,3 @@ async def test_unlike_tweet_not_liked(test_session, client):
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Like not found"
-
