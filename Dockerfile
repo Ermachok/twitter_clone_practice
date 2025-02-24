@@ -5,5 +5,6 @@ COPY pyproject.toml poetry.lock ./
 RUN pip install poetry && poetry install --no-root
 
 COPY . .
+ENV PYTHONPATH=/app
 
-CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["bash", "-c", "poetry run alembic upgrade head && poetry run python app/init_db.py && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000"]
