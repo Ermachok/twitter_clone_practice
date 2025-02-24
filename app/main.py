@@ -12,5 +12,10 @@ app.include_router(medias.router)
 
 UPLOAD_DIR = "uploads"
 
+
+@app.get('/pp')
+async def rooo():
+    return {'response' : True}
+
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/", StaticFiles(directory="app/static", html=True), name="static")

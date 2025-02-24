@@ -26,5 +26,6 @@ services:
       - "8000:8000"
     volumes:
       - ./uploads:/app/uploads
+
 volumes:
   postgres_data:
