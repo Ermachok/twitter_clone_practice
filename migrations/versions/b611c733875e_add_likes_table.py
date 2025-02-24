@@ -25,9 +25,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("tweet_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["tweet_id"], ["tweets.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["tweet_id"], ["tweets.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "tweet_id", name="unique_like"),

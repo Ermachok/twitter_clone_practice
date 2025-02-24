@@ -23,9 +23,7 @@ async def follow_user(
     if user.id == user_id:
         raise HTTPException(status_code=400, detail="Cannot follow yourself")
 
-    target_user_result = await db.execute(
-        select(User).where(User.id == user_id)
-    )
+    target_user_result = await db.execute(select(User).where(User.id == user_id))
     target_user = target_user_result.scalars().first()
     if not target_user:
         raise HTTPException(status_code=404, detail="Target user not found")
@@ -37,9 +35,7 @@ async def follow_user(
     )
     existing_follow = follow_result.scalars().first()
     if existing_follow:
-        raise HTTPException(
-            status_code=400, detail="Already following this user"
-        )
+        raise HTTPException(status_code=400, detail="Already following this user")
 
     follow = Follow(follower_id=user.id, following_id=user_id)
     db.add(follow)
@@ -75,9 +71,7 @@ async def unfollow_user(
 
 
 @router.get("/following")
-async def get_following(
-    api_key: str = Header(...), db: AsyncSession = Depends(get_db)
-):
+async def get_following(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()
     if not user:
@@ -92,9 +86,7 @@ async def get_following(
         {
             "id": f.following_id,
             "name": (
-                await db.execute(
-                    select(User.name).where(User.id == f.following_id)
-                )
+                await db.execute(select(User.name).where(User.id == f.following_id))
             ).scalar_one(),
         }
         for f in following
@@ -104,9 +96,7 @@ async def get_following(
 
 
 @router.get("/followers")
-async def get_followers(
-    api_key: str = Header(...), db: AsyncSession = Depends(get_db)
-):
+async def get_followers(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()
     if not user:
@@ -121,9 +111,7 @@ async def get_followers(
         {
             "id": f.follower_id,
             "name": (
-                await db.execute(
-                    select(User.name).where(User.id == f.follower_id)
-                )
+                await db.execute(select(User.name).where(User.id == f.follower_id))
             ).scalar_one(),
         }
         for f in followers
