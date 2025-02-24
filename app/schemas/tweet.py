@@ -16,9 +16,20 @@ class TweetResponse(BaseModel):
 class TweetDetail(BaseModel):
     id: int
     content: str
-    author_id: int
+    attachments: list
+    author: dict
+    likes: List[dict]
 
 
 class TweetListResponse(BaseModel):
     result: bool
     tweets: List[TweetDetail]
+
+
+class TweetDeleteResponse(BaseModel):
+    result: bool
+
+
+class TweetLikesList(BaseModel):
+    result: int
+    likes_count: int

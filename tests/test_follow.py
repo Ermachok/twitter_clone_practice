@@ -18,7 +18,6 @@ async def test_follow_user(test_session, client):
     assert response.status_code == 200
     data = response.json()
     assert data["result"] is True
-    assert data["message"] == "Followed successfully"
 
     # Check if follow record exists in DB
     follow = await test_session.execute(
@@ -56,7 +55,6 @@ async def test_unfollow_user(test_session, client):
     response = await client.delete("/api/follows/2", headers={"api-key": "user1"})
 
     assert response.status_code == 200
-    assert response.json()["message"] == "Unfollowed successfully"
 
     # Check if follow record was deleted
     follow = await test_session.execute(

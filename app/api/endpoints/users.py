@@ -5,6 +5,7 @@ from sqlalchemy.future import select
 from app.database import get_db
 from app.models.follow import Follow
 from app.models.user import User
+from app.schemas.user import UserBase, UserProfile, UserResponse
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -21,24 +22,21 @@ async def get_user_with_follow_data(user_id: int, db: AsyncSession):
         .join(Follow, Follow.follower_id == User.id)
         .where(Follow.following_id == user_id)
     )
-    followers = [{"id": f.id, "name": f.name} for f in followers_result.all()]
+    followers = [UserBase(id=f.id, name=f.name) for f in followers_result.all()]
 
     following_result = await db.execute(
         select(User.id, User.name)
         .join(Follow, Follow.following_id == User.id)
         .where(Follow.follower_id == user_id)
     )
-    following = [{"id": f.id, "name": f.name} for f in following_result.all()]
+    following = [UserBase(id=f.id, name=f.name) for f in following_result.all()]
 
-    return {
-        "id": user.id,
-        "name": user.name,
-        "followers": followers,
-        "following": following,
-    }
+    return UserProfile(
+        id=user.id, name=user.name, followers=followers, following=following
+    )
 
 
-@router.get("/me")
+@router.get("/me", response_model=UserResponse)
 async def get_current_user(
     api_key: str = Header(...), db: AsyncSession = Depends(get_db)
 ):
@@ -50,10 +48,10 @@ async def get_current_user(
 
     user_data = await get_user_with_follow_data(user.id, db)
 
-    return {"result": True, "user": user_data}
+    return UserResponse(result=True, user=user_data)
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user_profile(user_id: int, db: AsyncSession = Depends(get_db)):
     user_data = await get_user_with_follow_data(user_id, db)
-    return {"result": True, "user": user_data}
+    return UserResponse(result=True, user=user_data)

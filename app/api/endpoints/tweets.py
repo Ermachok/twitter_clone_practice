@@ -8,7 +8,15 @@ from app.models.like import Like
 from app.models.media import Media
 from app.models.tweet import Tweet
 from app.models.user import User
-from app.schemas.tweet import TweetCreate, TweetResponse
+from app.schemas.like import LikeRemovedResponse, LikeResponse
+from app.schemas.tweet import (
+    TweetCreate,
+    TweetDeleteResponse,
+    TweetDetail,
+    TweetLikesList,
+    TweetListResponse,
+    TweetResponse,
+)
 
 router = APIRouter(prefix="/api/tweets", tags=["Tweets"])
 
@@ -39,10 +47,10 @@ async def create_tweet(
 
         await db.commit()
 
-    return {"result": True, "tweet_id": tweet.id}
+    return TweetResponse(result=True, tweet_id=tweet.id)
 
 
-@router.get("")
+@router.get("", response_model=TweetListResponse)
 async def get_user_feed(
     api_key: str = Header(...),
     db: AsyncSession = Depends(get_db),
@@ -95,19 +103,19 @@ async def get_user_feed(
         attachments = [row[0] for row in attachments_result.all()]
 
         response.append(
-            {
-                "id": tweet.id,
-                "content": tweet.content,
-                "attachments": attachments,
-                "author": {"id": author.id, "name": author.name},
-                "likes": likes_data,
-            }
+            TweetDetail(
+                id=tweet.id,
+                content=tweet.content,
+                attachments=attachments,
+                author={"id": author.id, "name": author.name},
+                likes=likes_data,
+            )
         )
 
-    return {"result": True, "tweets": response}
+    return TweetListResponse(result=True, tweets=response)
 
 
-@router.delete("/{tweet_id}")
+@router.delete("/{tweet_id}", response_model=TweetDeleteResponse)
 async def delete_tweet(
     tweet_id: int,
     api_key: str = Header(...),
@@ -131,10 +139,10 @@ async def delete_tweet(
     await db.delete(tweet)
     await db.commit()
 
-    return {"result": True}
+    return TweetDeleteResponse(result=True)
 
 
-@router.post("/{tweet_id}/likes")
+@router.post("/{tweet_id}/likes", response_model=LikeResponse)
 async def like_tweet(
     tweet_id: int,
     api_key: str = Header(...),
@@ -160,10 +168,10 @@ async def like_tweet(
     like = Like(user_id=user.id, tweet_id=tweet.id)
     db.add(like)
     await db.commit()
-    return {"result": True, "message": "Tweet liked"}
+    return LikeResponse(result=True, message="Tweet liked")
 
 
-@router.get("/{tweet_id}/likes")
+@router.get("/{tweet_id}/likes", response_model=TweetLikesList)
 async def get_tweet_likes(tweet_id: int, db: AsyncSession = Depends(get_db)):
     tweet_result = await db.execute(select(Tweet).where(Tweet.id == tweet_id))
     tweet = tweet_result.scalars().first()
@@ -172,10 +180,10 @@ async def get_tweet_likes(tweet_id: int, db: AsyncSession = Depends(get_db)):
 
     likes_result = await db.execute(select(Like).where(Like.tweet_id == tweet_id))
     likes = likes_result.scalars().unique().all()
-    return {"result": True, "likes_count": len(likes)}
+    return TweetLikesList(result=True, likes_count=len(likes))
 
 
-@router.delete("/{tweet_id}/likes")
+@router.delete("/{tweet_id}/likes", response_model=LikeRemovedResponse)
 async def unlike_tweet(
     tweet_id: int,
     api_key: str = Header(...),
@@ -201,4 +209,4 @@ async def unlike_tweet(
     await db.delete(like)
     await db.commit()
 
-    return {"result": True, "message": "Like removed"}
+    return LikeRemovedResponse(result=True, message="Like removed")

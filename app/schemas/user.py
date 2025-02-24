@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
@@ -9,8 +9,8 @@ class UserBase(BaseModel):
 
 
 class UserProfile(UserBase):
-    followers: List[UserBase] = Field(default_factory=list)
-    following: List[UserBase] = Field(default_factory=list)
+    followers: List[UserBase]
+    following: List[UserBase]
 
 
 class UserResponse(BaseModel):

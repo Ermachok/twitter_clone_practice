@@ -5,11 +5,17 @@ from sqlalchemy.future import select
 from app.database import get_db
 from app.models.follow import Follow
 from app.models.user import User
+from app.schemas.follow import (
+    FollowResponse,
+    GetFollowersResponse,
+    GetFollowingResponse,
+    UnfollowResponse,
+)
 
 router = APIRouter(prefix="/api/follows", tags=["Follows"])
 
 
-@router.post("/{user_id}")
+@router.post("/{user_id}", response_model=FollowResponse)
 async def follow_user(
     user_id: int,
     api_key: str = Header(...),
@@ -41,10 +47,10 @@ async def follow_user(
     db.add(follow)
     await db.commit()
 
-    return {"result": True, "message": "Followed successfully"}
+    return FollowResponse(result=True)
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", response_model=UnfollowResponse)
 async def unfollow_user(
     user_id: int,
     api_key: str = Header(...),
@@ -67,10 +73,10 @@ async def unfollow_user(
     await db.delete(follow)
     await db.commit()
 
-    return {"result": True, "message": "Unfollowed successfully"}
+    return UnfollowResponse(result=True)
 
 
-@router.get("/following")
+@router.get("/following", response_model=GetFollowingResponse)
 async def get_following(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()
@@ -92,10 +98,10 @@ async def get_following(api_key: str = Header(...), db: AsyncSession = Depends(g
         for f in following
     ]
 
-    return {"result": True, "following": following_users}
+    return GetFollowingResponse(result=True, following=following_users)
 
 
-@router.get("/followers")
+@router.get("/followers", response_model=GetFollowersResponse)
 async def get_followers(api_key: str = Header(...), db: AsyncSession = Depends(get_db)):
     user_result = await db.execute(select(User).where(User.name == api_key))
     user = user_result.scalars().first()
@@ -117,4 +123,4 @@ async def get_followers(api_key: str = Header(...), db: AsyncSession = Depends(g
         for f in followers
     ]
 
-    return {"result": True, "followers": followers_users}
+    return GetFollowersResponse(result=True, followers=followers_users)
